@@ -27,9 +27,7 @@
                 <MudText Color="Color.Primary">
                     @(OperatingSystem.IsBrowser() ? "Running on WebAssembly" : "Running on Server")
                 </MudText>
-
                 
-
                 <MudButton Class="mt-2"
                            Color="Color.Primary"
                            Disabled="@(!OperatingSystem.IsBrowser())"

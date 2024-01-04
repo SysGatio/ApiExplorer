@@ -6,6 +6,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 builder.Services.AddHttpClient();
+builder.Services.AddTransient<IByabbeService, ByabbeService>();
+builder.Services.AddTransient<ILogService, LogService>();
 
 var app = builder.Build();
 

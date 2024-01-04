@@ -3,79 +3,105 @@
 
 <PageTitle>@TitlePage</PageTitle>
 
-<MudContainer Class="pa-4">
-    <MudGrid Justify="Justify.FlexStart">
-        <MudItem xs="12">
-            <MudPaper Elevation="1" Class="pa-4" Square="false">
-                <MudText GutterBottom="true" Typo="Typo.h6">
-                    <div style="display: flex; align-items: center;">
-                        @if (OperatingSystem.IsBrowser())
-                        {
-                            <MudIcon Icon="@Icons.Material.Filled.TravelExplore" Color="Color.Primary" style="margin-right: 8px;"/>
-                        }
-                        else
-                        {
-                            <MudIcon Icon="@Icons.Material.Filled.Dns" Color="Color.Primary" style="margin-right: 8px;"/>
-                        }
-                        <span>@TitlePage @(OperatingSystem.IsBrowser() ? "Wasm" : "Server")</span>
-                    </div>
-                </MudText>
-                <MudText Class="word-wrap" GutterBottom="true" Typo="Typo.subtitle2">@DescritionPage</MudText>
-                <MudSpacer/>
 
-                <MudPaper Elevation="2" Class="pa-4 mb-2">
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudTextField 
-                            @bind-Value="nullableInt" 
-                            HelperText="The month represented with a value between 1 and 12." 
-                            InputType="InputType.Number" 
-                            T="int?"
-                            Label="Month"
-                                          Variant="Variant.Text" />
-                    </MudItem>
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudTextField
-                            @bind-Value="nullableInt"
-                            HelperText="The day represented with a value between 1 and 31."
-                            InputType="InputType.Number"
-                            Label="Day"
-                            T="int?"
-                            Variant="Variant.Text"/>
-                    </MudItem>
+@if (_loadingPage)
+{
+    <MudText Color="Color.Primary">
+        <em>Loading...</em>
+    </MudText>
+}
+else
+{
+    <MudContainer Class="pa-4">
+        <MudGrid Justify="Justify.FlexStart">
+            <MudItem xs="12">
+                <MudPaper Elevation="1" Class="pa-4" Square="false">
 
-                    <MudButton Class="mt-2"
-                               Color="Color.Primary"
-                               Disabled="@(OperatingSystem.IsBrowser())"
-                               OnClick="IncrementCount"
-                               Variant="Variant.Filled">
-                        Increment
-                    </MudButton>
-                    
-                </MudPaper>
-                
-                <MudSpacer />
+                    <MudText GutterBottom="true" Typo="Typo.h6">
+                        <div style="display: flex; align-items: center;">
+                            @if (OperatingSystem.IsBrowser())
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.TravelExplore" Color="Color.Primary" style="margin-right: 8px;"/>
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Dns" Color="Color.Primary" style="margin-right: 8px;"/>
+                            }
+                            <span>@TitlePage @(OperatingSystem.IsBrowser() ? "Wasm" : "Server")</span>
+                        </div>
+                    </MudText>
 
-                <MudPaper Elevation="2" Class="pa-4 mb-2">
-                    <MudText GutterBottom="true" Typo="Typo.h5" Style="text-align: center;" Color="Color.Primary">EVENTS</MudText>
+                    <MudText Class="word-wrap" GutterBottom="true" Typo="Typo.subtitle2">@DescritionPage</MudText>
 
-                    @foreach (var eventItem in _events)
+                    <MudSpacer/>
+
+                    @if (!string.IsNullOrEmpty(ByabbeService.ApiMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Elevation="2" Class="mb-2">
+                            <MudAlertTitle>Service Error:</MudAlertTitle>
+                            <MudText Typo="Typo.body2">@ByabbeService.ApiMessage</MudText>
+                        </MudAlert>
+                    }
+                    else
                     {
                         <MudPaper Elevation="2" Class="pa-4 mb-2">
-                            <MudText Typo="Typo.subtitle2" Color="Color.Primary">YEAR: @eventItem.Year</MudText>
-                            <MudText Typo="Typo.body2" Class="mb-2">EVENT: @eventItem.Description</MudText>
 
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                @foreach (var link in eventItem.Wikipedia)
-                                {
-                                    <a class="link-style" href="@link.Wikipedia" target="_blank">
-                                        <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Filled">@link.Title</MudChip>
-                                    </a>
-                                }
-                            </div>
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField @bind-Value="_month"
+                                              HelperText="The month represented with a value between 1 and 12."
+                                              InputType="InputType.Number"
+                                              T="int?"
+                                              Label="Month"
+                                              Variant="Variant.Text"/>
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6" md="4">
+                                <MudTextField @bind-Value="_day"
+                                              HelperText="The day represented with a value between 1 and 31."
+                                              InputType="InputType.Number"
+                                              Label="Day"
+                                              T="int?"
+                                              Variant="Variant.Text"/>
+                            </MudItem>
+
+                            <MudButton Class="mt-2"
+                                       Color="Color.Primary"
+                                       Disabled="@(OperatingSystem.IsBrowser())"
+                                       OnClick="SearchEvents"
+                                       Variant="Variant.Filled">
+                                Search Events
+                            </MudButton>
+
+                        </MudPaper>
+
+                        <MudSpacer/>
+
+                        <MudPaper Elevation="2" Class="pa-4 mb-2">
+
+                            <MudText Color="Color.Primary" GutterBottom="true" Style="text-align: center;" Typo="Typo.h5">
+                                EVENTS - @ByabbeService.GetFormattedDate(_month, _day)
+                            </MudText>
+
+                            @foreach (var eventItem in ByabbeService.Events)
+                            {
+                                <MudPaper Elevation="2" Class="pa-4 mb-2">
+                                    <MudText Typo="Typo.subtitle2" Color="Color.Primary">YEAR: @eventItem.Year</MudText>
+                                    <MudText Typo="Typo.body2" Class="mb-2">EVENT: @eventItem.Description</MudText>
+
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        @foreach (var link in eventItem.Wikipedia)
+                                        {
+                                            <a class="link-style" href="@link.Wikipedia" target="_blank">
+                                                <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Filled">@link.Title</MudChip>
+                                            </a>
+                                        }
+                                    </div>
+                                </MudPaper>
+                            }
                         </MudPaper>
                     }
                 </MudPaper>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}

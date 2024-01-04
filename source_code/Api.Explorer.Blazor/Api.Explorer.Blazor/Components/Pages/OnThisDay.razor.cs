@@ -1,13 +1,17 @@
-﻿using Api.Explorer.Blazor.ExternalApis.Calendar.Byabbe.Dtos;
-
-namespace Api.Explorer.Blazor.Components.Pages;
+﻿namespace Api.Explorer.Blazor.Components.Pages;
 
 [UsedImplicitly]
 public partial class OnThisDay
 {
     #region Injects
     [Inject]
-    protected HttpClient HttpClient { get; set; } = default!;
+    protected IByabbeService ByabbeService { get; set; } = default!;
+
+    [Inject] 
+    protected IDialogService DialogService { get; set; } = default!;
+
+    [Inject] 
+    protected ILogService LogService { get; set; } = default!;
     #endregion
 
     #region Consts
@@ -17,22 +21,54 @@ public partial class OnThisDay
         "The data is all harvested from Wikipedia and therefore licensed under Creative Commons Attribution-ShareAlike 3.0 Unported License.";
     #endregion
 
-    private List<Event> _events = [];
-    private int? nullableInt;
-
+    private int? _month;
+    private int? _day;
+    private bool _loadingPage;
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await HttpClient.GetFromJsonAsync<HistoricalEvents>($"https://byabbe.se/on-this-day/{1}/{3}/events.json");
-
-        if (response != null)
+        try
         {
-            _events = [.. response.Events.OrderByDescending(e=> e.Year)];
+            _loadingPage = true;
+
+            _month = DateTime.Now.Month;
+            _day = DateTime.Now.Day;
+
+            await ByabbeService.ApiSearchEvents(_month.Value, _day.Value);
+        }
+        catch (Exception e)
+        {
+            await ShowDialogError();
+            await LogService.LogErrorToDatabase(e);
+        }
+        finally
+        {
+            _loadingPage = false;
         }
     }
 
-    private Task IncrementCount()
+    private async Task SearchEvents()
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (!ByabbeService.IsDateValid(_month, _day))
+            {
+                ByabbeService.ClearEvents();
+                return;
+            }
+
+            await ByabbeService.ApiSearchEvents(_month!.Value, _day!.Value);
+        }
+        catch (Exception e)
+        {
+            await ShowDialogError();
+            await LogService.LogErrorToDatabase(e);
+        }
+    }
+
+    private async Task ShowDialogError()
+    {
+        await DialogService.ShowMessageBox("Error",
+            "An error occurred during the operation. Please try again later or contact support.");
     }
 }

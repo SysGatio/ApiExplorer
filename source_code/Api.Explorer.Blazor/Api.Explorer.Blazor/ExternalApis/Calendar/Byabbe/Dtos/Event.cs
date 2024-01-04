@@ -7,4 +7,20 @@ public class Event
     public string Description { get; set; } = string.Empty;
 
     public List<WikipediaLink> Wikipedia { get; set; } = [];
+
+    public int YearInt
+    {
+        get
+        {
+            var isBc = Year.Contains("BC");
+            var yearNumber = Year.Replace("BC", "").Trim();
+
+            if (int.TryParse(yearNumber, out var yearInt))
+            {
+                return isBc ? -yearInt : yearInt;
+            }
+
+            return 0;
+        }
+    }
 }
