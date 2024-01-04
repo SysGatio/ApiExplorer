@@ -2,6 +2,16 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<MudContainer Class="pa-4">
+    <MudGrid Justify="Justify.FlexStart">
+        <MudItem xs="12">
+            <MudPaper Elevation="1" Class="pa-4" Square="false">
+                <MudText Typo="Typo.h6" GutterBottom="true">Hello, world!</MudText>
+                <MudText> Welcome to your new app. </MudText>
+                <MudText Color="Color.Primary">
+                    @(OperatingSystem.IsBrowser() ? "Running on WebAssembly" : "Running on Server")
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Api.Explorer.Blazor.Client\Api.Explorer.Blazor.Client.csproj" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.12.0" />
   </ItemGroup>
 
 </Project>

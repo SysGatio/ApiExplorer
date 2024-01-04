@@ -1,7 +1,6 @@
-﻿@page "/counter"
-@rendermode InteractiveAuto
+﻿@page "/template"
 
-<PageTitle>Interactive Counter</PageTitle>
+<PageTitle>@TitlePage</PageTitle>
 
 <MudContainer Class="pa-4">
     <MudGrid Justify="Justify.FlexStart">
@@ -17,31 +16,29 @@
                         {
                             <MudIcon Icon="@Icons.Material.Filled.Dns" Color="Color.Primary" style="margin-right: 8px;" />
                         }
-
                         <span>Interactive Counter @(OperatingSystem.IsBrowser() ? "Wasm" : "Server")</span>
                     </div>
                 </MudText>
-
-                <MudText Color="Color.Primary">Current count: @_currentCount</MudText>
+                <MudText Class="word-wrap" GutterBottom="true" Typo="Typo.subtitle2">@DescritionPage</MudText>
 
                 <MudText Color="Color.Primary">
                     @(OperatingSystem.IsBrowser() ? "Running on WebAssembly" : "Running on Server")
                 </MudText>
 
-                
-
                 <MudButton Class="mt-2"
                            Color="Color.Primary"
                            Disabled="@(!OperatingSystem.IsBrowser())"
-                           OnClick="IncrementCount"
                            Variant="Variant.Filled">
-                    Increment
+                    button
                 </MudButton>
 
-                <MudText Typo="Typo.body1" GutterBottom="true" Class="mt-2">
-                    Click 'Increment' to increase the count.
+                <MudText 
+                    Class="mt-2" 
+                    GutterBottom="true" 
+                    Typo="Typo.body1">
+                    text
                 </MudText>
             </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </MudContainer>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
